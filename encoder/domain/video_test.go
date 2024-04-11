@@ -1,17 +1,14 @@
 package domain_test
 
 import (
-	"testing"
-	"time"
-
+	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/zemartins81/encoderVideoGolang/domain"
-
-	uuid "github.com/satori/go.uuid"
+	"testing"
+	"time"
 )
 
-func TestValidateIfVideoIsEmpty(t *testing.T) {
-
+func TestValidateIfVideoISEmpty(t *testing.T) {
 	video := domain.NewVideo()
 	err := video.Validate()
 
@@ -20,9 +17,9 @@ func TestValidateIfVideoIsEmpty(t *testing.T) {
 
 func TestVideoIDIsNotAUuid(t *testing.T) {
 	video := domain.NewVideo()
-	video.ID = "123"
-	video.ResourceID = "abc"
-	video.FilePath = "def"
+	video.ID = "abc"
+	video.ResourceID = "a"
+	video.FilePath = "path"
 	video.CreatedAt = time.Now()
 
 	err := video.Validate()
@@ -32,8 +29,8 @@ func TestVideoIDIsNotAUuid(t *testing.T) {
 func TestVideoValidation(t *testing.T) {
 	video := domain.NewVideo()
 	video.ID = uuid.NewV4().String()
-	video.ResourceID = "abc"
-	video.FilePath = "def"
+	video.ResourceID = "a"
+	video.FilePath = "path"
 	video.CreatedAt = time.Now()
 
 	err := video.Validate()

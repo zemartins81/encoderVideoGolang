@@ -34,7 +34,7 @@ func NewDbTest() *gorm.DB {
 	connection, err := dbInstance.Connect()
 
 	if err != nil {
-		log.Fatalf("Test db errir: %v", err)
+		log.Fatalf("Test db error: %v", err)
 	}
 	return connection
 }

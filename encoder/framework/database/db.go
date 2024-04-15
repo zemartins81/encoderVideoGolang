@@ -56,7 +56,7 @@ func (d *Database) Connect() (*gorm.DB, error) {
 
 	if d.AutoMigrateDb {
 		d.DB.AutoMigrate(&domain.Video{}, &domain.Job{})
-		d.DB.Model(domain.Job{}).AddForeignKey("viceo_id", "videos (id)", "CASCADE", "CASCADE")
+		d.DB.Model(domain.Job{}).AddForeignKey("video_id", "videos (id)", "CASCADE", "CASCADE")
 	}
 
 	return d.DB, nil

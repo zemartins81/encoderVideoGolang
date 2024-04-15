@@ -7,7 +7,7 @@ import (
 	"github.com/zemartins81/encoderVideoGolang/domain"
 )
 
-type videoRepository interface {
+type VideoRepository interface {
 	Insert(video *domain.Video) (*domain.Video, error)
 	Find(id string) (*domain.Video, error)
 }

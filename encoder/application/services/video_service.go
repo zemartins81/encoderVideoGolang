@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/exec"
 )
 
 type VideoService struct {
@@ -15,7 +16,8 @@ type VideoService struct {
 	VideoRepository repositories.VideoRepository
 }
 
-func NewVIdeoService() VideoService {
+func NewVideoService() VideoService {
+	return VideoService{}
 }
 
 func (v *VideoService) Download(bucketName string) error {
@@ -44,7 +46,7 @@ func (v *VideoService) Download(bucketName string) error {
 		return err
 	}
 
-	_, err := f.Write(body)
+	_, err = f.Write(body)
 	if err != nil {
 		return err
 	}
@@ -53,4 +55,29 @@ func (v *VideoService) Download(bucketName string) error {
 	log.Printf("video %v has been saved", v.Video.ID)
 	return nil
 
+}
+
+func (v *VideoService) Fragment() error {
+	err := os.Mkdir(os.Getenv("localStoragePath")+"/"+v.Video.ID, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	source := os.Getenv("localStoragePath") + "/" + v.Video.ID + ".mp4"
+	target := os.Getenv("localStoragePath") + "/" + v.Video.ID + ".frag"
+
+	cmd := exec.Command(",p4fragment", source, target)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return err
+	}
+	printOutput(output)
+	return nil
+
+}
+
+func printOutput(output []byte) {
+	if len(output) > 0 {
+		log.Printf("===> Output: %s\n", string(output))
+	}
 }

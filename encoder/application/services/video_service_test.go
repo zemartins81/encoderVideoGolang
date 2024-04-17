@@ -1,6 +1,10 @@
 package services_test
 
 import (
+	"log"
+	"testing"
+	"time"
+
 	"github.com/joho/godotenv"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/require"
@@ -8,9 +12,6 @@ import (
 	"github.com/zemartins81/encoderVideoGolang/application/services"
 	"github.com/zemartins81/encoderVideoGolang/domain"
 	"github.com/zemartins81/encoderVideoGolang/framework/database"
-	"log"
-	"testing"
-	"time"
 )
 
 func init() {
@@ -41,5 +42,14 @@ func TestVideoServiceDownload(t *testing.T) {
 	videoService.VideoRepository = repo
 
 	err := videoService.Download("encodervideotest")
+	require.Nil(t, err)
+
+	err = videoService.Fragment()
+	require.Nil(t, err)
+
+	err = videoService.Encode()
+	require.Nil(t, err)
+
+	err = videoService.Finish()
 	require.Nil(t, err)
 }

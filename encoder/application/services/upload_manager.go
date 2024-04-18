@@ -4,6 +4,8 @@ import (
 	"context"
 	"io"
 	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 
 	"cloud.google.com/go/storage"
@@ -20,13 +22,6 @@ func NewVideoUpload() *VideoUpload {
 	return &VideoUpload{}
 }
 
-// UploadObject uploads an object to a storage client.
-//
-// Parameters:
-// - objectpath: the path of the object to upload.
-// - client: the storage client where the object will be uploaded.
-// - ctx: the context for the upload operation.
-// Returns an error if any.
 func (vu *VideoUpload) UploadObject(objectpath string, client *storage.Client, ctx context.Context) error {
 	path := strings.Split(objectpath, os.Getenv("localStoragePath")+"/")
 
@@ -52,5 +47,51 @@ func (vu *VideoUpload) UploadObject(objectpath string, client *storage.Client, c
 		return err
 	}
 	return nil
+}
+
+func (vu *VideoUpload) loadPaths() error {
+	err := filepath.Walk(vu.VideoPath, func(path string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			vu.Paths = append(vu.Paths, path)
+		}
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func getClientUpload() (*storage.Client, context.Context, error) {
+	ctx := context.Background()
+
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+	return client, ctx, nil
+}
+
+func (vu *VideoUpload) ProcessUpload(concurrency int, doneUpload chan string) error {
+
+	in := make(chan int, runtime.NumCPU())
+	returnChannel := make(chan string)
+
+	err := vu.loadPaths()
+	if err != nil {
+		return err
+	}
+
+	uploadClient, ctx, err := getClientUpload()
+	if err != nil {
+		return err
+	}
+	for process := 0; process < concurrency; process++ {
+		go vu.upLoadWorker()
+	}
+}
+
+func (vu *VideoUpload) upLoadWorker(in chan int, returnChan chan string, uploadClient *storage.Client, ctx context.Context) {
 
 }

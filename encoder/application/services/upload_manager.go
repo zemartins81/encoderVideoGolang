@@ -87,11 +87,20 @@ func (vu *VideoUpload) ProcessUpload(concurrency int, doneUpload chan string) er
 	if err != nil {
 		return err
 	}
+
 	for process := 0; process < concurrency; process++ {
-		go vu.upLoadWorker()
+		go vu.upLoadWorker(in, returnChannel, uploadClient, ctx)
 	}
+	go func() {
+		for x := 0; x < len(vu.Paths); x++ {
+			in <- x
+		}
+		close(in)
+	}()
 }
 
 func (vu *VideoUpload) upLoadWorker(in chan int, returnChan chan string, uploadClient *storage.Client, ctx context.Context) {
+	for x := range in {
 
+	}
 }
